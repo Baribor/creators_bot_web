@@ -3,34 +3,34 @@ import StateContainer from "../components/StatContainer"
 const contentData = [
 	{
 		title: 'total',
-		value: 34
+		value: 0
 	},
 	{
 		title: 'views',
-		value: 345
+		value: 0
 	},
 	{
 		title: 'subscribers',
-		value: 345
+		value: 0
 	}
 ]
 
 const earningData = [
 	{
 		title: 'today',
-		value: '€ 6'
+		value: '€ 0'
 	},
 	{
 		title: 'this week',
-		value: "€ 345"
+		value: "€ 0"
 	},
 	{
 		title: 'this month',
-		value: "€ 1500"
+		value: "€ 0"
 	},
 	{
 		title: 'total',
-		value: "€ 1851"
+		value: "€ 0"
 	}
 ]
 

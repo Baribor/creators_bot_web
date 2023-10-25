@@ -8,13 +8,13 @@ import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 export default function AdminLayout() {
 
 	return (
-		<div className="w-screen h-screen flex flex-col">
+		<div className="w-screen h-screen overflow-hidden relative">
 			{/* appbar */}
-			<div className="w-full h-16 bg-green-400">
+			<div className="w-full h-16 fixed top-0 border-b-2">
 
 			</div>
 
-			<div className="flex-grow flex">
+			<div className="flex w-full pt-16">
 				{/* Side bar */}
 				<div className="w-1/5 border-r-2 select-none p-3 flex flex-col gap-1">
 					<NavItem text="Dashboard" to="">
@@ -32,7 +32,7 @@ export default function AdminLayout() {
 				</div>
 
 				{/* Main content */}
-				<div className="flex-grow">
+				<div className="flex-grow px-20 py-10 overflow-y-scroll">
 					<Outlet />
 				</div>
 			</div>

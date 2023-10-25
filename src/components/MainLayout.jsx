@@ -1,5 +1,5 @@
 import Avatar from "@mui/material/Avatar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import SettingsIcon from '@mui/icons-material/Settings';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import NavItem from "./NavItem";
@@ -7,23 +7,35 @@ import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { IconButton } from "@mui/material";
+import { useRecoilState } from "recoil";
+import { useEffect } from "react";
+import { user } from "../states";
 
 
 export default function MainLayout() {
+	const u = useLoaderData()
+	const [currentUser, setUser] = useRecoilState(user)
 
+	useEffect(() => {
+		setUser(u)
+	}, [])
+
+	if (!u) {
+		return null
+	}
 	return (
 		<>
 			<div className="w-screen h-screen flex overflow-hidden">
 				{/* Side bar */}
-				<div className="w-1/4 p-3 shadow-md border-r-2 select-none">
+				<div className="w-1/4 p-3 border-r select-none">
 					{/* navs */}
 					<div className="flex flex-col gap-1 h-full pt-14">
 
-						<NavItem text="Stat" to="">
+						<NavItem text="Dashboard" to="">
 							<EqualizerIcon />
 						</NavItem>
 
-						<NavItem text="Publish Content" to="">
+						<NavItem text="Publish Content" to="create">
 							<SettingsInputAntennaIcon />
 						</NavItem>
 
@@ -39,13 +51,13 @@ export default function MainLayout() {
 				</div>
 
 				{/* Main content */}
-				<div className="h-screen flex-grow ">
+				<div className="h-screen w-3/4 ">
 					{/* App bar */}
-					<div className="w-full h-16 shadow-sm border-b-2 px-10 flex items-center justify-end gap-4">
+					<div className="w-full h-16 shadow-sm border-b px-10 flex items-center justify-end gap-4">
 
 						<div className="border-2 rounded-full overflow-hidden flex items-center">
 							<span className="mr-2 px-3 font-bold">Balance</span>
-							<span>€ 1200</span>
+							<span>€ 0.0</span>
 							<IconButton>
 								<KeyboardArrowDownIcon />
 							</IconButton>
@@ -55,13 +67,13 @@ export default function MainLayout() {
 
 						{/* Avatar */}
 						<div className="flex items-center justify-end gap-2">
-							<Avatar alt="user profile image" src="vite.svg" variant="circular" />
-							<p className="font-bold text-sm">Ada George</p>
+							<Avatar alt="user profile image" src={currentUser?.profilePic} variant="circular" />
+							<p className="font-bold text-sm">{currentUser?.username}</p>
 						</div>
 					</div>
-					<div className="px-20 py-10 overflow-y-scroll ">
+					<div className="px-20 py-10 overflow-y-scroll h-full">
 
-					<Outlet />
+						<Outlet />
 					</div>
 				</div>
 			</div>
