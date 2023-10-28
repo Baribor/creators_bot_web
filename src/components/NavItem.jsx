@@ -6,7 +6,7 @@ export default function NavItem({ text, to, children }) {
 	const isCurrentPath = () => {
 		const paths = location.pathname.split("/")
 		const lastPath = paths[paths.length - 1]
-		return lastPath === to || (to === "" && lastPath === "home");
+		return lastPath === to || (to === "" && lastPath === "home") || (to === "" && lastPath === "admin");
 	}
 
 	return (

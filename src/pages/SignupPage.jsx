@@ -1,9 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button"
-import { useRecoilState } from "recoil";
-import { BASE_URL, user } from "../states";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../states";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { enqueueSnackbar } from "notistack";
@@ -16,11 +14,10 @@ const validationSchema = yup.object({
 
 
 export default function CreatorSignup() {
-	const [currentUser, setUser] = useRecoilState(user)
+	const currentUser = useLoaderData()
 	const navigate = useNavigate()
-
 	const handleSubmit = async (username) => {
-		console.log("Callled")
+		delete currentUser.token;
 		const res = await fetch(BASE_URL + "/creator", {
 			method: "POST",
 			headers: {
@@ -33,7 +30,7 @@ export default function CreatorSignup() {
 		}).then(res => res.json())
 
 		if (res.status) {
-			setUser(res.user)
+			localStorage.setItem("creatorBotUser", JSON.stringify(res.user))
 			navigate("/home")
 			enqueueSnackbar({
 				message: "Account created successfully", variant: "success"
@@ -57,11 +54,7 @@ export default function CreatorSignup() {
 		},
 	})
 
-	useEffect(() => {
-		if (currentUser?.token) {
-			navigate("/home")
-		}
-	}, [])
+
 	return (
 		<div className="w-screen h-screen flex ">
 			<div className="w-1/2 p-8 flex items-center">

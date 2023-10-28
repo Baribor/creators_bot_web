@@ -34,7 +34,7 @@ export default function Uploader({ content }) {
 	const audDur = useRecoilValue(audioDuration)
 
 	const handleUpload = useCallback(() => {
-		const storageRef = ref(storage, `/files/${content.file}`);
+		const storageRef = ref(storage, `/files/${content.type}/${content.id}`);
 
 		// progress can be paused and resumed. It also exposes progress updates.
 		// Receives the storage reference and the file to upload.

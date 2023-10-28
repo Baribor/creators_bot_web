@@ -42,4 +42,4 @@ export const uploadedContents = atom({
 	default: []
 })
 
-export const BASE_URL = "https://jmgelx-ip-102-90-46-127.tunnelmole.net/api"
+export const BASE_URL = "/api";

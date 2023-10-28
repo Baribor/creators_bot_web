@@ -1,49 +1,16 @@
-import { useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { BASE_URL, user } from "../states";
-import { enqueueSnackbar } from "notistack";
-
-
+import { useLoaderData } from "react-router-dom"
 
 export default function LoginPage() {
-	const setUser = useSetRecoilState(user);
-	const navigate = useNavigate()
-
-	const [searchParams] = useSearchParams()
-
-	const beginLogin = useCallback(async () => {
-		const res = await fetch(BASE_URL + "/auth/login?" + searchParams)
-			.then(res => res.json())
-		if (res.status) {
-			localStorage.setItem("creatorBotUser", JSON.stringify(res.user));
-			setUser(res.user)
-			navigate("/" + searchParams.get("redirect"))
-		} else {
-			enqueueSnackbar({
-				message: res.message,
-				variant: "error"
-			})
-			navigate("/login")
-		}
-	}, [])
-
-	useEffect(() => {
-		if (searchParams.get("id")) {
-			beginLogin()
-		}
-
-	}, [])
+	const data = useLoaderData()
+	if (data) {
+		return null
+	}
 
 	return (
 		<div>
-			{
-				!searchParams.get("id") && <div className="h-screen w-screen flex justify-center items-center">
-					<div className="bg-blue-600 text-white font-bold rounded-full p-3 px-5 text-center">
-						<a href="https://t.me/curvsyCreatorsBot?start=signin"><span>Login from telegram</span></a>
-					</div>
-				</div>
-			}
+			<div className="h-screen w-screen flex justify-center items-center">
+				<iframe src={`https://oauth.telegram.org/embed/curvsyCreatorsBot?origin=${encodeURIComponent(location.origin)}&request_access=write&return_to=${encodeURIComponent(location.origin)}%2Flogin&size=large`} frameBorder="0" width="fit-content" height={40} scrolling="no" className="overflow-hidden border-none h-10 w-fit bg-white" style={{ colorScheme: "light dark" }}></iframe>
+			</div>
 		</div>
 	)
 }

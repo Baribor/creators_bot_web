@@ -13,6 +13,7 @@ export const FinishPublishButton = ({ handleClose }) => {
 	const currentUser = useRecoilValue(user)
 	const navigate = useNavigate()
 
+
 	const cleanUp = () => {
 		setContents([])
 		setUploaded([])
@@ -25,7 +26,6 @@ export const FinishPublishButton = ({ handleClose }) => {
 		let uniques = uploaded.map(JSON.stringify)
 		uniques = new Set(uniques)
 		uniques = Array.from(uniques).map(JSON.parse)
-		console.log(uniques)
 
 		const payload = {
 			contents: uniques,
@@ -58,7 +58,7 @@ export const FinishPublishButton = ({ handleClose }) => {
 	}
 
 	return (
-		contents.length * 2 === uploaded.length &&
+		(contents.length * 2 === uploaded.length || contents.length === uploaded.length) &&
 		<Button autoFocus onClick={handleFinish}>
 			Finish
 		</Button>

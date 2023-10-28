@@ -13,7 +13,7 @@ import { enqueueSnackbar } from "notistack";
 
 const validationSchema = yup.object({
 	description: yup.string().required("Description cannot be empty"),
-	price: yup.number()
+	price: yup.number().min(1, "Price must be greater than 0")
 })
 
 
@@ -82,6 +82,8 @@ export default function AddProperties({ activeStep, handleBack, handleNext, step
 					onChange={formik.handleChange}
 					required
 					name="price"
+					error={formik.touched.price && Boolean(formik.errors.price)}
+					helperText={formik.touched.price && formik.errors.price}
 				/>
 				<div>
 					<div {...getRootProps()} className="bg-blue-400 text-center rounded-full p-3 cursor-pointer">

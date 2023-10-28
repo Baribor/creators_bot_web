@@ -1,57 +1,36 @@
+import { Suspense } from "react"
+import Loader from "../../components/Loader"
 import StateContainer from "../../components/StatContainer"
+import { Await, useAsyncValue, useLoaderData } from "react-router-dom"
 
-const contentData = [
-	{
-		title: 'total',
-		value: 34
-	},
-	{
-		title: 'views',
-		value: 345
-	},
-	{
-		title: 'subscribers',
-		value: 345
-	}
-]
 
-const earningData = [
-	{
-		title: 'today',
-		value: '€ 6'
-	},
-	{
-		title: 'this week',
-		value: "€ 345"
-	},
-	{
-		title: 'this month',
-		value: "€ 1500"
-	},
-	{
-		title: 'total',
-		value: "€ 1851"
-	}
-]
+const StatDetails = () => {
+	const data = useAsyncValue()
+	console.log(data)
+	return (
+		<div className="h-full w-full">
+			{
+				data.status ? (
+					Object.entries(data.data).map((data) => <StateContainer key={data[0]} title={data[0]} stats={data[1]} />)
+				) :
+					(
+						<span className="font-bold text-xl">An error occurred while fetching data</span>
+					)
+			}
 
-const clientsData = [
-	{
-		title: 'total creators',
-		value: 950
-	},
-	{
-		title: 'total customers',
-		value: 5283
-	}
-]
+		</div>
+	)
+}
+
 
 export default function AdminStatPage() {
+	const res = useLoaderData();
 
 	return (
-		<div>
-			<StateContainer title="Clients" stats={clientsData} />
-			<StateContainer title="Contents" stats={contentData} />
-			<StateContainer title="Revenue" stats={earningData} />
-		</div>
+		<Suspense fallback={<Loader />}>
+			<Await resolve={res.data}>
+				<StatDetails />
+			</Await>
+		</Suspense>
 	)
 }
