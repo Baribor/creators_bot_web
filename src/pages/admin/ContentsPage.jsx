@@ -14,31 +14,34 @@ import Loader from '../../components/Loader';
 
 const columns = [
 	{ id: 'id', label: 'ID', minWidth: 100 },
-	{ id: 'username', label: 'Username', minWidth: 170 },
-	{ id: 'name', label: 'Name', minWidth: 170 },
-	{
-		id: 'email',
-		label: 'Email',
-		minWidth: 170,
-	},
-	{
-		id: 'contents',
-		label: 'Total contents',
-		minWidth: 170,
-		align: 'right',
-		format: (value) => value.toLocaleString('en-US'),
-	},
+	{ id: 'creator', label: 'Creator', minWidth: 170 },
 	{
 		id: 'views',
-		label: 'Total views',
+		label: 'Views',
 		minWidth: 170,
 		align: 'right',
 		format: (value) => value.toLocaleString('en-US'),
 	},
+	{
+		id: 'images',
+		label: 'Images',
+		minWidth: 170,
+		align: 'right',
+		format: (value) => value.toLocaleString('en-US'),
+	},
+	{
+		id: 'files',
+		label: 'Files',
+		minWidth: 170,
+		align: 'right',
+		format: (value) => value.toLocaleString('en-US'),
+	},
+	{ id: 'video', label: 'Video', minWidth: 170 },
+	{ id: 'audio', label: 'Audio', minWidth: 170 },
 ];
 
 
-export function CreatorsPage() {
+export function ContentsPage() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const rows = useAsyncValue();
@@ -61,7 +64,7 @@ export function CreatorsPage() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{rows
+						{rows.contents
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((row) => {
 								return (
@@ -85,7 +88,7 @@ export function CreatorsPage() {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
 				component="div"
-				count={rows.length}
+				count={rows.contents.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 
@@ -95,13 +98,13 @@ export function CreatorsPage() {
 }
 
 
-export default function CreatorsStatPage() {
+export default function ContentsStatPage() {
 	const res = useLoaderData();
 
 	return (
 		<Suspense fallback={<Loader />}>
 			<Await resolve={res.data}>
-				<CreatorsPage />
+				<ContentsPage />
 			</Await>
 		</Suspense>
 	)

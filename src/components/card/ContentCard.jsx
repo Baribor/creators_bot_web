@@ -65,7 +65,7 @@ export default function ContentCard({ content }) {
 	}
 
 	return (
-		<Card sx={{ width: 280, position: "relative" }}>
+		<Card sx={{ width: 280, position: "relative", }}>
 			<CardMedia
 				sx={{ height: 180 }}
 				image="/locked-file.jpg"

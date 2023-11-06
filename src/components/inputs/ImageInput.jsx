@@ -14,8 +14,6 @@ export default function ImageInput() {
 	const [files, setFiles] = useState([])
 
 	const {
-		acceptedFiles,
-		fileRejections,
 		getRootProps,
 		getInputProps
 	} = useDropzone({
@@ -30,6 +28,7 @@ export default function ImageInput() {
 				})
 				return
 			}
+
 			acceptedFiles.forEach(file => addContent(file, fileTypes.IMAGE, v4()))
 		}
 	});

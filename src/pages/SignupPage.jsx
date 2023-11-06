@@ -18,6 +18,7 @@ export default function CreatorSignup() {
 	const navigate = useNavigate()
 	const handleSubmit = async (username) => {
 		delete currentUser.token;
+		console.log(currentUser);
 		const res = await fetch(BASE_URL + "/creator", {
 			method: "POST",
 			headers: {
@@ -30,7 +31,7 @@ export default function CreatorSignup() {
 		}).then(res => res.json())
 
 		if (res.status) {
-			localStorage.setItem("creatorBotUser", JSON.stringify(res.user))
+			localStorage.setItem("creatorBotUser", res.token)
 			navigate("/home")
 			enqueueSnackbar({
 				message: "Account created successfully", variant: "success"
@@ -56,8 +57,8 @@ export default function CreatorSignup() {
 
 
 	return (
-		<div className="w-screen h-screen flex ">
-			<div className="w-1/2 p-8 flex items-center">
+		<div className="w-screen h-screen md:flex ">
+			<div className="md:w-1/2 p-8 flex items-center">
 
 				<FormControl fullWidth className="flex flex-col justify-center items-center gap-5">
 					<h1 className="font-bold text-3xl mb-10">Creator Sign Up</h1>

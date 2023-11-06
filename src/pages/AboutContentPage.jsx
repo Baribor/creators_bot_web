@@ -2,6 +2,7 @@ import Avatar from "@mui/material/Avatar";
 import { useLoaderData } from "react-router-dom";
 import Divider from '@mui/material/Divider';
 import VisitorContentCard from "../components/card/VisitorContentCard";
+import { BOT_USERNAME } from "../states";
 
 
 
@@ -30,7 +31,7 @@ export default function AboutContentPage() {
 				<div className="w-3/5 flex justify-center items-center flex-col">
 					<VisitorContentCard content={content} />
 					<div className="mt-8 bg-blue-600 text-white rounded-full p-2 px-6 hover:bg-blue-500 duration-300 cursor-pointer">
-						<a href={`http://t.me/curvsyCreatorsBot?start=unlock_${content.id}`}><span>UNLOCK CONTENT</span></a>
+						<a href={`http://t.me/${BOT_USERNAME}?start=unlock_${content.id}`}><span>UNLOCK CONTENT</span></a>
 					</div>
 				</div>
 			</div >

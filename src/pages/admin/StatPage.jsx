@@ -6,7 +6,6 @@ import { Await, useAsyncValue, useLoaderData } from "react-router-dom"
 
 const StatDetails = () => {
 	const data = useAsyncValue()
-	console.log(data)
 	return (
 		<div className="h-full w-full">
 			{

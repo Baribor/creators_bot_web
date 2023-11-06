@@ -42,4 +42,11 @@ export const uploadedContents = atom({
 	default: []
 })
 
+export const plans = atom({
+	key: "plans",
+	default: []
+});
+
 export const BASE_URL = "/api";
+
+export const BOT_USERNAME = "contentCreatorsBot";

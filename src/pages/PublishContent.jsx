@@ -4,18 +4,28 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import AddFiles from '../components/AddFiles';
 import AddProperties from '../components/AddProperties';
 import Preview from '../components/Preview';
 import PageNavigator from './PageNavigator';
 import DeployDialog from '../components/dialog/DeployDialog';
+import Loader from '../components/Loader';
+import { Await, useAsyncValue, useLoaderData } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import { plans } from '../states';
 
 const steps = ['Add files', 'Add properties', 'Preview'];
 
-export default function PublishContent() {
+function Publish() {
 	const [activeStep, setActiveStep] = useState(0);
 	const [publishing, setPublishing] = useState(false)
+	const data = useAsyncValue();
+	const setPlans = useSetRecoilState(plans);
+
+	useEffect(() => {
+		setPlans(data.subs);
+	}, [data])
 
 	const handleNext = () => {
 		if (activeStep === 2) {
@@ -76,4 +86,16 @@ export default function PublishContent() {
 		</>
 
 	);
+}
+
+export default function PublishContent() {
+	const res = useLoaderData();
+
+	return (
+		<Suspense fallback={<Loader />}>
+			<Await resolve={res.data}>
+				<Publish />
+			</Await>
+		</Suspense>
+	)
 }

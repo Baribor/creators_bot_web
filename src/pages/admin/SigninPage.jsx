@@ -53,7 +53,7 @@ export default function AdminSignIn() {
 	return (
 		<div className='h-screen w-screen flex justify-center items-center'>
 			<Paper elevation={3}>
-				<div className='flex flex-col p-10 gap-3 w-[40vw]'>
+				<div className='flex flex-col p-10 gap-3 w-[90vw] md:w-[50vw]'>
 					<h1 className='font-bold text-xl'>ADMINISTRATION</h1>
 					<TextField label="Email" type='email' helperText={formik.touched.email && formik.errors.email}
 						error={formik.touched.email && Boolean(formik.errors.email)}
