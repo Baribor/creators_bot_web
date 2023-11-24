@@ -4,7 +4,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import PersonIcon from '@mui/icons-material/Person';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import { ADMIN_KEY } from "../../lib/constsnts";
+import { ADMIN_KEY } from "../../lib/constants";
 
 
 import AppBar from '@mui/material/AppBar';
@@ -13,6 +13,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import EuroIcon from '@mui/icons-material/Euro';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -53,11 +54,9 @@ export default function AdminLayout(props) {
 				</NavItem>
 
 
-
 				<NavItem text="Creators" to="creators" handleClick={handleDrawerToggle}>
 					<EngineeringIcon />
 				</NavItem>
-
 
 
 				<NavItem text="Customers" to="customers" handleClick={handleDrawerToggle}>
@@ -65,11 +64,14 @@ export default function AdminLayout(props) {
 				</NavItem>
 
 
-
 				<NavItem text="Contents" to="contents" handleClick={handleDrawerToggle}>
 					<FolderCopyIcon />
 				</NavItem>
 
+
+				<NavItem text="Requests" to="withdrawal_requests" handleClick={handleDrawerToggle}>
+					<EuroIcon />
+				</NavItem>
 
 				<span className="text-red-400 text-start ml-1 p-3 hover:bg-red-200 w-fit rounded-full px-4 cursor-pointer" onClick={handleLogout}>LOGOUT</span>
 
@@ -145,7 +147,9 @@ export default function AdminLayout(props) {
 				sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
 			>
 				<Toolbar />
-				<Outlet />
+				<Box sx={{ width: '100%', height: "100%" }}>
+					<Outlet />
+				</Box>
 			</Box>
 		</Box>
 	);

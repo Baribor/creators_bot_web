@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BASE_URL, user } from "../states";
 import * as yup from "yup"
-import { useFormik } from "formik";
+import { replace, useFormik } from "formik";
 import { enqueueSnackbar } from "notistack";
 import { useDropzone } from "react-dropzone";
 import PermMediaIcon from '@mui/icons-material/PermMedia';
@@ -16,9 +16,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import Avatar from "@mui/material/Avatar";
-import { USER_KEY } from "../lib/constsnts";
-import { json } from "react-router-dom";
+import { USER_KEY } from "../lib/constants";
 import { Link } from "@mui/material";
+import LoadingScreen from "../components/LoadingScreen";
+import ConfirmAccountDeletion from "../components/dialog/ConfirmAccountDeletionDialog";
+import { useNavigate } from "react-router-dom";
+import { TrendingUpRounded } from "@mui/icons-material";
 
 
 const validationSchema = yup.object({
@@ -30,16 +33,19 @@ const validationSchema = yup.object({
 })
 
 function SettingsPage() {
-	const currentUser = useRecoilValue(user)
+	const [currentUser, setUser] = useRecoilState(user)
 	const [pic, setPic] = useState({ preview: currentUser.profilePic });
+	const [loading, setLoading] = useState(false);
+	const [deleteDialog, setDeleteDialog] = useState(false)
+	const navigate = useNavigate()
 
 	const formik = useFormik({
 		initialValues: {
-			firstName: currentUser.profile?.firstName,
-			lastName: currentUser.profile?.lastName,
-			email: currentUser?.email,
-			bio: currentUser?.bio,
-			iban: currentUser?.iban
+			firstName: currentUser.profile?.firstName ? currentUser.profile?.firstName : "",
+			lastName: currentUser.profile?.lastName ? currentUser.profile?.lastName : "",
+			email: currentUser?.email ? currentUser?.email : "",
+			bio: currentUser?.bio ? currentUser?.bio : "",
+			iban: currentUser?.iban ? currentUser?.iban : ""
 		},
 		validationSchema,
 
@@ -54,18 +60,28 @@ function SettingsPage() {
 				formData.set("avatar", pic.file, pic.file.name);
 			}
 
-			enqueueSnackbar({
-				message: "Updating please wait...", variant: "info"
-			})
+			setLoading(true)
+			const token = localStorage.getItem(USER_KEY);
+
 			const data = await fetch(BASE_URL + "/creator", {
 				method: "PUT",
 				headers: {
-					Authorization: `Bearer ${currentUser?.token}`
+					Authorization: `Bearer ${token}`
 				},
 				body: formData
 			}).then(res => res.json())
 
 			if (data.status) {
+
+				const _user = await fetch(BASE_URL + "/creator", {
+					headers: {
+						Authorization: `Bearer ${token}`
+					},
+				}).then(res => res.json())
+
+				if (_user.status) {
+					setUser(_user.creator)
+				}
 				enqueueSnackbar({
 					message: data.message, variant: "success"
 				})
@@ -74,6 +90,8 @@ function SettingsPage() {
 					message: data.message, variant: "error"
 				})
 			}
+
+			setLoading(false)
 		}
 	})
 
@@ -99,6 +117,16 @@ function SettingsPage() {
 				})
 			}
 		})
+
+	const handleClose = (status) => {
+		setDeleteDialog(false)
+		if (status) {
+			localStorage.removeItem(USER_KEY)
+			navigate("/login", {
+				replace: TrendingUpRounded
+			})
+		}
+	}
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex gap-2">
@@ -123,30 +151,35 @@ function SettingsPage() {
 						<span className="text-white font-bold"><PermMediaIcon /> Change profile pic</span>
 					</div>
 
-					<div className="inline-flex rounded-sm border mb-2 mr-2 w-24 h-24 p-1 box-border">
-						<div className="flex min-w-0 overflow-hidden ">
-							<img
-								src={pic.preview}
-								className="block w-auto h-full"
-								// Revoke data uri after image is loaded
-								onLoad={() => { URL.revokeObjectURL(pic.preview) }}
-							/>
-						</div>
-					</div>
+					{
+						pic.preview && <div className="inline-flex rounded-sm border mb-2 mr-2 w-24 h-24 p-1 box-border">
+							<div className="flex min-w-0 overflow-hidden ">
+								<img
+									src={pic.preview}
+									className="block w-auto h-full"
+									// Revoke data uri after image is loaded
+									onLoad={() => { URL.revokeObjectURL(pic.preview) }}
+								/>
 
+							</div>
+						</div>
+					}
 				</div>
 
 
 				<span className="w-fit font-bold" >Payment</span>
 
-				<TextField label="IBAN" name="iban" value={formik.values.iban} onChange={formik.handleChange} />
+				<TextField label="IBAN (International Bank Account Number)" name="iban" value={formik.values.iban} onChange={formik.handleChange} />
 
 			</div>
 			<div className="grid grid-cols-2 gap-4">
-				<Button variant="text" sx={{ padding: { "sm": ".3rem", "lg": "1rem" } }} color="error" endIcon={<DeleteIcon />}>Delete Account</Button>
+				<Button variant="text" sx={{ padding: { "sm": ".3rem", "lg": "1rem" } }} color="error" endIcon={<DeleteIcon />} onClick={() => setDeleteDialog(true)}>Delete Account</Button>
 				<Button variant="contained" style={{ padding: "1rem" }} endIcon={<SaveIcon />} onClick={formik.handleSubmit}>SAVE</Button>
 			</div>
-
+			<LoadingScreen open={loading} />
+			{
+				deleteDialog && <ConfirmAccountDeletion handleClose={(status) => handleClose(status)} />
+			}
 		</div>
 	)
 }
@@ -341,9 +374,9 @@ export default function SettingsPageRoot() {
 				<Tabs
 					value={value}
 					onChange={handleChange}
-					textColor="secondary"
-					indicatorColor="secondary"
-					aria-label="secondary tabs example"
+					textColor="primary"
+					indicatorColor="primary"
+					aria-label="primary tabs example"
 				>
 					<Tab label="Profile" {...a11yProps(0)} />
 					<Tab label="Bot Account" {...a11yProps(1)} />

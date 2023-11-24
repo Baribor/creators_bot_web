@@ -1,5 +1,5 @@
 import classNames from "classnames"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function NavItem({ text, to, handleClick, children }) {
 	const location = useLocation();

@@ -1,11 +1,17 @@
 import { Suspense } from "react"
 import Loader from "../../components/Loader"
 import StateContainer from "../../components/StatContainer"
-import { Await, useAsyncValue, useLoaderData } from "react-router-dom"
+import { Await, Navigate, useAsyncValue, useLoaderData } from "react-router-dom"
+import { ADMIN_KEY } from "../../lib/constants"
 
 
 const StatDetails = () => {
 	const data = useAsyncValue()
+
+	if (data?.message === "invalid token") {
+		localStorage.removeItem(ADMIN_KEY);
+		return <Navigate to={"/auth/admin/login"} replace={true} />
+	}
 	return (
 		<div className="h-full w-full">
 			{

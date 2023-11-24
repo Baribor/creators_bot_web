@@ -47,6 +47,8 @@ export const plans = atom({
 	default: []
 });
 
-export const BASE_URL = "/api";
+/* export const BASE_URL = "http://localhost:3000/api";
+export const BOT_USERNAME = "contentCreatorsBot"; */
 
-export const BOT_USERNAME = "contentCreatorsBot";
+export const BASE_URL = "/api";
+export const BOT_USERNAME = "curvsyCreatorsBot";

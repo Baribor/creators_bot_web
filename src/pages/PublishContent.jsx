@@ -40,13 +40,9 @@ function Publish() {
 	};
 
 
-	const handleReset = () => {
-		setActiveStep(0);
-	};
-
 	return (
 		<>
-			<Box sx={{ width: '100%' }}>
+			<Box sx={{ width: '100%', height: "100%" }}>
 				<Stepper activeStep={activeStep}>
 					{steps.map((label) => {
 						const stepProps = {};
@@ -58,27 +54,17 @@ function Publish() {
 						);
 					})}
 				</Stepper>
-				{activeStep === steps.length ? (
-					<>
-						<Typography sx={{ mt: 2, mb: 1 }}>
-							All steps completed - you&apos;re finished
-						</Typography>
-						<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-							<Box sx={{ flex: '1 1 auto' }} />
-							<Button onClick={handleReset}>Reset</Button>
-						</Box>
-					</>
-				) : (
-					<div className='py-10'>
-						<AddFiles activeStep={activeStep} />
-						<AddProperties activeStep={activeStep} handleBack={handleBack} handleNext={handleNext} steps={steps.length} />
-						<Preview activeStep={activeStep} />
-						{
-							activeStep !== 1 && <PageNavigator handleBack={handleBack} handleNext={handleNext} activeStep={activeStep} steps={steps.length} />
-						}
 
-					</div>
-				)}
+				<div className='py-10'>
+					<AddFiles activeStep={activeStep} />
+					<AddProperties activeStep={activeStep} handleBack={handleBack} handleNext={handleNext} steps={steps.length} />
+					<Preview activeStep={activeStep} />
+					{
+						activeStep !== 1 && <PageNavigator handleBack={handleBack} handleNext={handleNext} activeStep={activeStep} steps={steps.length} />
+					}
+
+				</div>
+
 			</Box>
 			{
 				publishing && <DeployDialog />

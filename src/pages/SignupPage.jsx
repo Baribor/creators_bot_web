@@ -16,9 +16,9 @@ const validationSchema = yup.object({
 export default function CreatorSignup() {
 	const currentUser = useLoaderData()
 	const navigate = useNavigate()
+
 	const handleSubmit = async (username) => {
-		delete currentUser.token;
-		console.log(currentUser);
+
 		const res = await fetch(BASE_URL + "/creator", {
 			method: "POST",
 			headers: {
@@ -55,7 +55,9 @@ export default function CreatorSignup() {
 		},
 	})
 
-
+	if (!currentUser) {
+		return null;
+	}
 	return (
 		<div className="w-screen h-screen md:flex ">
 			<div className="md:w-1/2 p-8 flex items-center">

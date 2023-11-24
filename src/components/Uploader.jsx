@@ -10,7 +10,7 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import { fileTypes } from '../lib/utils';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { audioDuration, uploadedContents, videoDuration } from '../states';
+import { audioDuration, uploadedContents, user, videoDuration } from '../states';
 
 const getIcon = (type) => {
 	if (type === fileTypes.VIDEO) {
@@ -32,9 +32,10 @@ export default function Uploader({ content }) {
 	const setUploadedContents = useSetRecoilState(uploadedContents)
 	const vidDur = useRecoilValue(videoDuration)
 	const audDur = useRecoilValue(audioDuration)
+	const currentUser = useRecoilValue(user);
 
 	const handleUpload = useCallback(() => {
-		const storageRef = ref(storage, `/files/${content.type}/${content.id}`);
+		const storageRef = ref(storage, `/${currentUser.id}/${content.type}/${content.id}`);
 
 		// progress can be paused and resumed. It also exposes progress updates.
 		// Receives the storage reference and the file to upload.
@@ -61,7 +62,10 @@ export default function Uploader({ content }) {
 					if (content.type === fileTypes.AUDIO) {
 						newContent.duration = audDur
 					}
-					console.log("Called here")
+
+					if (content.type === fileTypes.PREVIEW) {
+						newContent.fileType = fileTypes.FILE;
+					}
 					setUploadedContents((cur) => [...cur, newContent])
 				});
 			}

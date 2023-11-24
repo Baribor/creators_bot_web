@@ -16,7 +16,8 @@ export const fileTypes = {
 	IMAGE: 'image',
 	VIDEO: 'video',
 	AUDIO: 'audio',
-	FILE: 'file'
+	FILE: 'file',
+	PREVIEW: 'preview'
 }
 
 function str_pad_left(string, pad, length) {

@@ -68,7 +68,6 @@ export default function Preview({ activeStep }) {
 				<CardMedia
 					sx={{ height: 280 }}
 					image="/locked-file.jpg"
-					title="green iguana"
 				/>
 				<CardContent>
 					<div className='text-end font-bold text-blue-600'>

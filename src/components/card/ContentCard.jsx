@@ -11,9 +11,13 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { enqueueSnackbar } from 'notistack';
+import { useState } from 'react';
+import ConfirmContentDeletion from '../dialog/ConfirmContentDelete';
 
 
-export default function ContentCard({ content }) {
+export default function ContentCard({ content, handleDeleted }) {
+
+	const [dialog, setDialog] = useState(false)
 
 	const getContentDetails = () => {
 		const contents = [];
@@ -52,6 +56,13 @@ export default function ContentCard({ content }) {
 		return contents;
 	}
 
+	const handleClose = (status) => {
+		if (status) {
+			handleDeleted(content);
+		}
+		setDialog(false)
+	}
+
 	const handleCopy = () => {
 		navigator.clipboard.writeText(`https://${location.hostname}/content/${content.id}`).then(() => {
 			enqueueSnackbar({
@@ -65,7 +76,8 @@ export default function ContentCard({ content }) {
 	}
 
 	return (
-		<Card sx={{ width: 280, position: "relative", }}>
+		<div className='relative'>
+			<Card sx={{ width: 280, position: "relative", height: "100%" }}>
 			<CardMedia
 				sx={{ height: 180 }}
 				image="/locked-file.jpg"
@@ -93,6 +105,19 @@ export default function ContentCard({ content }) {
 					<ContentCopyIcon />
 				</IconButton>
 			</Tooltip>
+
+
 		</Card>
+			<div className='flex p-1'>
+				<span className='bg-red-400 text-white px-4 rounded-lg cursor-pointer' onClick={() => {
+					setDialog(true)
+				}}>Delete</span>
+			</div>
+
+			{
+				dialog && <ConfirmContentDeletion handleClose={handleClose} contentId={content.id} />
+			}
+		</div>
+
 	)
 }

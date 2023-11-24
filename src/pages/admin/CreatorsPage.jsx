@@ -8,8 +8,9 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Suspense, useState } from 'react';
-import { Await, useAsyncValue, useLoaderData } from 'react-router-dom';
+import { Await, Navigate, useAsyncValue, useLoaderData } from 'react-router-dom';
 import Loader from '../../components/Loader';
+import { ADMIN_KEY } from '../../lib/constants';
 
 
 const columns = [
@@ -24,16 +25,23 @@ const columns = [
 	{
 		id: 'contents',
 		label: 'Total contents',
-		minWidth: 170,
-		align: 'right',
+		minWidth: 90,
+		align: 'center',
 		format: (value) => value.toLocaleString('en-US'),
 	},
 	{
 		id: 'views',
 		label: 'Total views',
-		minWidth: 170,
-		align: 'right',
+		minWidth: 90,
+		align: 'center',
 		format: (value) => value.toLocaleString('en-US'),
+	},
+	{
+		id: 'joined',
+		label: 'Joined At',
+		minWidth: 90,
+		align: 'center',
+		format: (value) => new Date(value).toLocaleString('en-US'),
 	},
 ];
 
@@ -43,6 +51,10 @@ export function CreatorsPage() {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const rows = useAsyncValue();
 
+	if (rows?.message === "invalid token") {
+		localStorage.removeItem(ADMIN_KEY)
+		return <Navigate to={"/auth/admin/login"} replace={true} />
+	}
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
 			<TableContainer sx={{ maxHeight: 440 }}>
@@ -70,8 +82,7 @@ export function CreatorsPage() {
 											const value = row[column.id];
 											return (
 												<TableCell key={column.id} align={column.align}>
-													{column.format && typeof value === 'number'
-														? column.format(value)
+													{column.format ? column.format(value)
 														: value}
 												</TableCell>
 											);
@@ -83,12 +94,13 @@ export function CreatorsPage() {
 				</Table>
 			</TableContainer>
 			<TablePagination
-				rowsPerPageOptions={[10, 25, 100]}
+				rowsPerPageOptions={[10, 25, 50, 100]}
 				component="div"
 				count={rows.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
-
+				onPageChange={(evt) => setPage(evt.target.value)}
+				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
 		</Paper>
 	);

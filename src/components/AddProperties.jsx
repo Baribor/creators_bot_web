@@ -1,7 +1,7 @@
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import TextField from "@mui/material/TextField";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { description, plans, previewData, price } from "../states";
 import { useDropzone } from "react-dropzone";
 import * as yup from "yup"
@@ -12,21 +12,28 @@ import { enqueueSnackbar } from "notistack";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { useState } from "react";
+import { fileTypes, useAddContent } from "../lib/utils";
+import { v4 } from "uuid";
 
 
 const validationSchema = yup.object({
 	description: yup.string().required("Description cannot be empty"),
-	price: yup.number().min(1, "Price must be greater than 0"),
+	price: yup.number(),
 	sub: yup.string()
 })
 
 
 export default function AddProperties({ activeStep, handleBack, handleNext, steps }) {
 
-	const [preview, setPreview] = useRecoilState(previewData);
+	const [preview, setPreview] = useState(null);
 	const setDescription = useSetRecoilState(description);
 	const setPrice = useSetRecoilState(price);
-	const subPlans = useRecoilState(plans);
+	const addContent = useAddContent();
+	const subPlans = useRecoilValue(plans);
+	const [isSubscriptionBase, setIsSubscriptionBase] = useState(false);
 
 	const {
 		getRootProps,
@@ -40,9 +47,8 @@ export default function AddProperties({ activeStep, handleBack, handleNext, step
 				})
 				return
 			}
-			setPreview({
-				file: acceptedFiles[0],
-			})
+			addContent(acceptedFiles[0], fileTypes.PREVIEW, v4())
+			setPreview({ file: acceptedFiles[0] })
 		},
 	});
 
@@ -75,49 +81,67 @@ export default function AddProperties({ activeStep, handleBack, handleNext, step
 				/>
 
 				<div>
-					{
-						subPlans.length === 0 ?
-							(
-								<p>You don&apos;t have any subscription plan. To created contents visible to only subscribers, goto to the bot menu on telegram and create a subscription plan </p>
-							) :
-							(
-								<>
-									<InputLabel id="demo-simple-select-label">Subscription plan</InputLabel>
-
-									<Select
-										labelId="demo-simple-select-label"
-										id="demo-simple-select"
-										value={formik.values.sub}
-										label="Age"
-										onChange={formik.handleChange}
-										name="sub"
-										fullWidth
-									>
-										{
-											subPlans.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)
-										}
-
-									</Select>
-								</>
-							)
-					}
+					<FormControlLabel
+						value={isSubscriptionBase}
+						control={<Switch checked={isSubscriptionBase} onChange={() => setIsSubscriptionBase(!isSubscriptionBase)} />}
+						label="Subscription based"
+						labelPlacement="start"
+					/>
 				</div>
+				{
+					isSubscriptionBase ?
+						(
+							<div>
+								{
+									subPlans.length === 0 ?
+										(
+											<p>You don&apos;t have any subscription plan. To created contents visible to only subscribers, goto to the bot menu on telegram and create a subscription plan </p>
+										) :
+										(
+											<>
+												<InputLabel id="demo-simple-select-label">Subscription plan</InputLabel>
 
-				<label className="text-blue-600">Price </label>
-				<OutlinedInput
-					id="outlined-adornment-amount"
-					startAdornment={<InputAdornment position="start">€</InputAdornment>}
-					sx={{
-						width: 150
-					}}
-					type="number"
-					value={formik.values.price}
-					onChange={formik.handleChange}
-					required
-					name="price"
-					error={formik.touched.price && Boolean(formik.errors.price)}
-					helperText={formik.touched.price && formik.errors.price}
-				/>
+												<Select
+													labelId="demo-simple-select-label"
+													id="demo-simple-select"
+													value={formik.values.sub}
+													onChange={formik.handleChange}
+													name="sub"
+													fullWidth
+												>
+													{
+														subPlans.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)
+													}
+
+												</Select>
+											</>
+										)
+								}
+							</div>
+						)
+						:
+						(
+							<>
+								<label className="text-blue-600">Price </label>
+								<OutlinedInput
+									id="outlined-adornment-amount"
+									startAdornment={<InputAdornment position="start">€</InputAdornment>}
+									sx={{
+										width: 150
+									}}
+									type="number"
+									value={formik.values.price}
+									onChange={formik.handleChange}
+									required
+									name="price"
+									error={formik.touched.price && Boolean(formik.errors.price)}
+									helperText={formik.touched.price && formik.errors.price}
+								/>
+							</>
+						)
+				}
+
+
 				<div>
 					<div {...getRootProps()} className="bg-blue-400 text-center rounded-full p-3 cursor-pointer">
 						<input type="file" {...getInputProps()} />

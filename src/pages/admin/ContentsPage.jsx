@@ -8,8 +8,9 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Suspense, useState } from 'react';
-import { Await, useAsyncValue, useLoaderData } from 'react-router-dom';
+import { Await, Navigate, useAsyncValue, useLoaderData } from 'react-router-dom';
 import Loader from '../../components/Loader';
+import { ADMIN_KEY } from '../../lib/constants';
 
 
 const columns = [
@@ -46,6 +47,10 @@ export function ContentsPage() {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const rows = useAsyncValue();
 
+	if (rows?.message === "invalid token") {
+		localStorage.removeItem(ADMIN_KEY)
+		return <Navigate to={"/auth/admin/login"} replace={true} />
+	}
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
 			<TableContainer sx={{ maxHeight: 440 }}>
@@ -86,12 +91,13 @@ export function ContentsPage() {
 				</Table>
 			</TableContainer>
 			<TablePagination
-				rowsPerPageOptions={[10, 25, 100]}
+				rowsPerPageOptions={[10, 25, 50, 100]}
 				component="div"
 				count={rows.contents.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
-
+				onPageChange={(evt) => setPage(evt.target.value)}
+				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
 		</Paper>
 	);

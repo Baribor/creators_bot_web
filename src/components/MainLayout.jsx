@@ -5,11 +5,10 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import NavItem from "./NavItem";
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useRecoilState } from "recoil";
 import { useEffect, useState } from "react";
 import { user } from "../states";
-import { USER_KEY } from "../lib/constsnts";
+import { USER_KEY } from "../lib/constants";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,6 +17,7 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
+import Wallet from "./Wallet";
 
 
 const drawerWidth = 240;
@@ -50,16 +50,9 @@ export default function MainLayout(props) {
 		<div>
 			<Toolbar />
 			<div className="w-full border-r-2 select-none p-3 flex flex-col gap-1">
+				<Wallet />
 
-				<div className="border-2 rounded-full overflow-hidden flex items-center w-fit">
-					<span className="mr-2 px-3 font-bold">Balance</span>
-					<span>€ {currentUser.wallet?.balance}</span>
-					<IconButton>
-						<KeyboardArrowDownIcon />
-					</IconButton>
-
-				</div>
-
+				<Divider />
 				<NavItem text="Dashboard" to="" handleClick={handleDrawerToggle}>
 					<EqualizerIcon />
 				</NavItem>
@@ -162,7 +155,10 @@ export default function MainLayout(props) {
 				>
 
 					<Toolbar />
-					<Outlet />
+					<Box sx={{ width: '100%', height: "100%" }}>
+						<Outlet />
+
+					</Box>
 				</Box>
 			</Box>
 		</>
