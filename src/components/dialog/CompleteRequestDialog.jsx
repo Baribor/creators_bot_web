@@ -41,7 +41,7 @@ export default function CompleteRequestDialog({ id, handleClose }) {
 
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
+					<Button onClick={() => handleClose()}>Cancel</Button>
 					<Button onClick={handleConfirm} variant='success'>Confirm</Button>
 				</DialogActions>
 			</Dialog>

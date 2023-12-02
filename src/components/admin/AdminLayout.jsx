@@ -144,12 +144,10 @@ export default function AdminLayout(props) {
 			</Box>
 			<Box
 				component="main"
-				sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+				sx={{ p: 3, width: { sm: `calc(100% - ${drawerWidth}px)`, height: "100vh", overflowY: "scroll" } }}
 			>
 				<Toolbar />
-				<Box sx={{ width: '100%', height: "100%" }}>
-					<Outlet />
-				</Box>
+				<Outlet />
 			</Box>
 		</Box>
 	);

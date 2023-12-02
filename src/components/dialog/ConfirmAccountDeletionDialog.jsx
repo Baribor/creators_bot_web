@@ -5,19 +5,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { enqueueSnackbar } from 'notistack';
-import { ADMIN_KEY, USER_KEY } from '../../lib/constants';
+import { ADMIN_KEY } from '../../lib/constants';
 import { BASE_URL } from '../../states';
+import { useState } from 'react';
 
 
-export default function ConfirmAccountDeletion({ handleClose }) {
+export default function ConfirmAccountDeletion({ handleClose, creatorId, type }) {
+	const [loading, setLoading] = useState(false);
 
 	const handleConfirm = async () => {
-		enqueueSnackbar({
-			message: "Please wait...", variant: "info"
-		})
-
-		const token = localStorage.getItem(USER_KEY)
-		const res = await fetch(BASE_URL + "/creator", {
+		setLoading(true);
+		const token = localStorage.getItem(ADMIN_KEY)
+		const res = await fetch(BASE_URL + (type === "customer" ? `/admin/customers?customer_id=${creatorId}` : `/admin/creator?creator_id=${creatorId}`), {
 			headers: {
 				Authorization: `Bearer ${token}`
 			},
@@ -28,7 +27,8 @@ export default function ConfirmAccountDeletion({ handleClose }) {
 		enqueueSnackbar({
 			message: res.message, variant: res.status ? "success" : "error"
 		})
-		handleClose(res.status ? true : false)
+		handleClose(res.status ? creatorId : false)
+		setLoading(false)
 	}
 
 	return (
@@ -38,13 +38,13 @@ export default function ConfirmAccountDeletion({ handleClose }) {
 				<DialogContent>
 					<DialogContentText>
 						This action is unrecoverable. <br />
-						All your generated data will be lost, however we will retain your id in some sections for the continual functionality of our system.
+						All generated data belonging to this account will be lost.
 					</DialogContentText>
 
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleConfirm} variant='success'>Confirm</Button>
+					<Button onClick={() => handleClose()} disabled={loading}>Cancel</Button>
+					<Button onClick={handleConfirm} variant='success' disabled={loading}>Confirm</Button>
 				</DialogActions>
 			</Dialog>
 		</>

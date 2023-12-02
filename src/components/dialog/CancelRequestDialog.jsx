@@ -53,7 +53,7 @@ export default function CancelRequestDialog({ id, handleClose }) {
 	return (
 		<>
 			<Dialog open={true}>
-				<DialogTitle>Canel Request</DialogTitle>
+				<DialogTitle>Cancel Request</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						Please enter the reason for cancelling this request.
@@ -74,7 +74,7 @@ export default function CancelRequestDialog({ id, handleClose }) {
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
+					<Button onClick={() => handleClose()}>Cancel</Button>
 					<Button onClick={formik.handleSubmit}>Confirm</Button>
 				</DialogActions>
 			</Dialog>

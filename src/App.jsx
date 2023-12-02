@@ -12,6 +12,7 @@ import ContentsStatPage from './pages/admin/ContentsPage'
 //import SettingsPageRoot from './pages/SettingsPage'
 import WithdrawalPageRoot from './pages/admin/WithdrawalRequests'
 import MyContentsPage from './pages/ContentPage'
+import ContentDetailPage from './pages/admin/ContentDetails'
 
 
 
@@ -64,8 +65,25 @@ const routes = [
                 }
               }).then(res => res.json()).catch(err => null)
               return defer({ data })
-            }
+            },
+
           },
+
+          {
+            path: "content/detail/:content_id",
+            element: <ContentDetailPage />,
+            loader: async ({ params }) => {
+              console.log("Called here")
+              const data = fetch(BASE_URL + `/admin/content?content_id=${params.content_id}`, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(ADMIN_KEY)}`
+                }
+              }).then(res => res.json()).catch(err => null)
+              return defer({ data })
+            },
+          },
+
+
           {
             path: "customers",
             element: <CustomersStatPage />,

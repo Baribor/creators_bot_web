@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { enqueueSnackbar } from 'notistack';
-import { USER_KEY } from '../../lib/constants';
+import { ADMIN_KEY } from '../../lib/constants';
 import { BASE_URL } from '../../states';
 import { useState } from 'react';
 
@@ -15,12 +15,10 @@ export default function ConfirmContentDeletion({ handleClose, contentId }) {
 	const [deleting, setDeleting] = useState(false)
 
 	const handleConfirm = async () => {
-		enqueueSnackbar({
-			message: "Please wait...", variant: "info"
-		})
+
 		setDeleting(true);
-		const token = sessionStorage.getItem(USER_KEY)
-		const res = await fetch(BASE_URL + "/content?contentId=" + `${contentId}`, {
+		const token = localStorage.getItem(ADMIN_KEY)
+		const res = await fetch(BASE_URL + "/admin/content?content_id=" + `${contentId}`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			},
@@ -31,7 +29,7 @@ export default function ConfirmContentDeletion({ handleClose, contentId }) {
 		enqueueSnackbar({
 			message: res.message, variant: res.status ? "success" : "error"
 		})
-		handleClose(res.status ? true : false)
+		handleClose(res.status ? contentId : false)
 	}
 
 	return (
@@ -46,7 +44,7 @@ export default function ConfirmContentDeletion({ handleClose, contentId }) {
 
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} disabled={deleting}>Cancel</Button>
+					<Button onClick={() => handleClose()} disabled={deleting}>Cancel</Button>
 					<Button onClick={handleConfirm} variant='success' disabled={deleting}>Confirm</Button>
 				</DialogActions>
 			</Dialog>

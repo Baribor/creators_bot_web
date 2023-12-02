@@ -11,6 +11,7 @@ import { Suspense, useState } from 'react';
 import { Await, Navigate, useAsyncValue, useLoaderData } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { ADMIN_KEY } from '../../lib/constants';
+import ConfirmAccountDeletion from '../../components/dialog/ConfirmAccountDeletionDialog';
 
 
 const columns = [
@@ -43,15 +44,27 @@ const columns = [
 		align: 'center',
 		format: (value) => new Date(value).toLocaleString('en-US'),
 	},
+	{ id: 'action', label: 'Action', minWidth: 60 },
 ];
 
 
 export function CreatorsPage() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
-	const rows = useAsyncValue();
+	const _rows = useAsyncValue();
+	const [rows, setRows] = useState(_rows)
+	const [dialog, setDialog] = useState(false);
 
-	if (rows?.message === "invalid token") {
+
+	const handleCreatorRemoved = (id) => {
+		if (id) {
+			setRows(rows.filter(c => c.id !== id));
+		}
+
+		setDialog(false);
+	}
+
+	if (_rows?.message === "invalid token") {
 		localStorage.removeItem(ADMIN_KEY)
 		return <Navigate to={"/auth/admin/login"} replace={true} />
 	}
@@ -80,7 +93,14 @@ export function CreatorsPage() {
 									<TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
 										{columns.map((column) => {
 											const value = row[column.id];
-											return (
+											return column.id === "action" ?
+												(
+													<TableCell>
+														<span className='bg-red-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => setDialog(row.id)}>Delete</span>
+
+													</TableCell>
+												)
+												: (
 												<TableCell key={column.id} align={column.align}>
 													{column.format ? column.format(value)
 														: value}
@@ -102,6 +122,10 @@ export function CreatorsPage() {
 				onPageChange={(evt) => setPage(evt.target.value)}
 				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
+
+			{
+				dialog && <ConfirmAccountDeletion creatorId={dialog} handleClose={handleCreatorRemoved} type="creator" />
+			}
 		</Paper>
 	);
 }

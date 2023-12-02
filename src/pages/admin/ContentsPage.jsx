@@ -8,9 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Suspense, useState } from 'react';
-import { Await, Navigate, useAsyncValue, useLoaderData } from 'react-router-dom';
+import { Await, Navigate, useAsyncValue, useLoaderData, useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { ADMIN_KEY } from '../../lib/constants';
+import ConfirmContentDeletion from '../../components/dialog/ConfirmContentDelete';
 
 
 const columns = [
@@ -39,15 +40,27 @@ const columns = [
 	},
 	{ id: 'video', label: 'Video', minWidth: 170 },
 	{ id: 'audio', label: 'Audio', minWidth: 170 },
+	{ id: 'action', label: 'Action', minWidth: 40 },
 ];
 
 
 export function ContentsPage() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
-	const rows = useAsyncValue();
+	const navigate = useNavigate();
+	const _rows = useAsyncValue();
+	const [rows, setRows] = useState(_rows.contents);
+	const [dialog, setDialog] = useState(false);
 
-	if (rows?.message === "invalid token") {
+	const handleContentDeleted = (id) => {
+		if (id) {
+			setRows(rows.filter((r) => r.id !== id))
+		}
+
+		setDialog(false)
+	}
+
+	if (_rows?.message === "invalid token") {
 		localStorage.removeItem(ADMIN_KEY)
 		return <Navigate to={"/auth/admin/login"} replace={true} />
 	}
@@ -69,20 +82,32 @@ export function ContentsPage() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{rows.contents
+						{rows
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((row) => {
 								return (
 									<TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
 										{columns.map((column) => {
 											const value = row[column.id];
-											return (
-												<TableCell key={column.id} align={column.align}>
-													{column.format && typeof value === 'number'
-														? column.format(value)
-														: value}
-												</TableCell>
-											);
+											return column.id === "action" ?
+												(
+													<TableCell>
+														<div className='flex gap-1'>
+															<span className='bg-blue-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => {
+																navigate(`/admin/content/detail/${row.id}`)
+															}}>View</span>
+															<span className='bg-red-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => setDialog(row.id)}>Delete</span>
+														</div>
+													</TableCell>
+												)
+												:
+												(
+													<TableCell key={column.id} align={column.align}>
+														{column.format && typeof value === 'number'
+															? column.format(value)
+															: value}
+													</TableCell>
+												);
 										})}
 									</TableRow>
 								);
@@ -93,12 +118,16 @@ export function ContentsPage() {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 50, 100]}
 				component="div"
-				count={rows.contents.length}
+				count={rows.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={(evt) => setPage(evt.target.value)}
 				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
+
+			{
+				dialog && <ConfirmContentDeletion contentId={dialog} handleClose={handleContentDeleted} />
+			}
 		</Paper>
 	);
 }
