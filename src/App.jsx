@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter, defer } from 'react-router-dom'
+import { Outlet, RouterProvider, createBrowserRouter, defer } from 'react-router-dom'
 import './App.css'
 import AdminSignIn from './pages/admin/SigninPage'
 import AdminLayout from './components/admin/AdminLayout'
@@ -13,6 +13,13 @@ import ContentsStatPage from './pages/admin/ContentsPage'
 import WithdrawalPageRoot from './pages/admin/WithdrawalRequests'
 import MyContentsPage from './pages/ContentPage'
 import ContentDetailPage from './pages/admin/ContentDetails'
+import VerificationPage from './pages/admin/VerificationPage'
+import VerificationDetail from './pages/admin/VerificationDetail'
+import ContentDetails from './pages/ContentDetails'
+import Checkout from './pages/CheckoutPage'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentCancel from './pages/PaymentCancel'
+import CheckoutLayout from './components/CheckoutLayout'
 
 
 
@@ -73,7 +80,6 @@ const routes = [
             path: "content/detail/:content_id",
             element: <ContentDetailPage />,
             loader: async ({ params }) => {
-              console.log("Called here")
               const data = fetch(BASE_URL + `/admin/content?content_id=${params.content_id}`, {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem(ADMIN_KEY)}`
@@ -95,6 +101,14 @@ const routes = [
               }).then(res => res.json()).catch(err => null)
               return defer({ data })
             }
+          },
+          {
+            path: "verification",
+            element: <VerificationPage />,
+          },
+          {
+            path: "verification/detail",
+            element: <VerificationDetail />
           },
           {
             path: "withdrawal_requests",
@@ -122,7 +136,6 @@ const routes = [
         loader: async ({ params }) => {
           let content = await fetch(BASE_URL + `/content?contentId=${params.contentId}`).then(res => res.json())
             .catch(() => null);
-
           return content?.content;
         }
       },
@@ -131,6 +144,32 @@ const routes = [
         path: "contents/:creatorId",
         element: <MyContentsPage />
       },
+      {
+        path: "contents/:creatorId/details",
+        element: <ContentDetails />
+      },
+
+      {
+        path: "checkout",
+        element: <CheckoutLayout />,
+        children: [
+          {
+            path: "",
+            element: <Checkout />,
+            index: true
+          },
+          {
+            path: "success",
+            element: <PaymentSuccess />
+          },
+          {
+            path: "cancel",
+            element: <PaymentCancel />
+          },
+        ]
+
+      },
+
     ]
   }
 ]

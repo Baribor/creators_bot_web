@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 
 import { useCallback, useEffect, useState } from "react";
-import { BASE_URL } from '../../states';
+import { BASE_URL, withdrawalRequests } from '../../states';
 import { ADMIN_KEY } from '../../lib/constants';
 import { enqueueSnackbar } from 'notistack';
 import Loader from '../../components/Loader';
@@ -20,11 +20,12 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import CancelRequestDialog from '../../components/dialog/CancelRequestDialog';
 import CompleteRequestDialog from '../../components/dialog/CompleteRequestDialog';
+import { useRecoilState } from 'recoil';
 
 
 const pendingColumns = [
 	{ id: 'creator_id', label: 'Creator ID', minWidth: 100 },
-	{ id: 'username', label: 'Username', minWidth: 170 },
+	{ id: 'username', label: 'Username', minWidth: 80 },
 	{ id: 'iban', label: 'IBAN', minWidth: 170 },
 	{ id: 'amount', label: 'Amount', minWidth: 80 },
 	{
@@ -38,7 +39,7 @@ const pendingColumns = [
 
 const columns = [
 	{ id: 'creator_id', label: 'Creator ID', minWidth: 100 },
-	{ id: 'username', label: 'Username', minWidth: 170 },
+	{ id: 'username', label: 'Username', minWidth: 80 },
 	{ id: 'amount', label: 'Amount', minWidth: 90 },
 	{
 		id: 'completed_at',
@@ -51,36 +52,10 @@ const columns = [
 
 
 const PendingWithdrawals = () => {
-	const [requests, setRequests] = useState(null);
+	const [requests, setRequests] = useRecoilState(withdrawalRequests);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [dialog, setDialog] = useState(null)
-
-	const retrieveRequests = useCallback(async () => {
-		const token = localStorage.getItem(ADMIN_KEY);
-
-
-		const requests = await fetch(BASE_URL + "/admin/withdrawal_requests?status=pending", {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		}).then(res => res.json())
-			.catch(err => console.log)
-
-		if (requests.status) {
-			setRequests(requests.requests);
-		} else {
-			setRequests([])
-			enqueueSnackbar({
-				message: "There was an error retrieving the requests", variant: "error"
-			})
-		}
-	}, [])
-
-	useEffect(() => {
-		retrieveRequests();
-
-	}, [])
 
 	const handleClose = (status) => {
 		if (status) {
@@ -101,7 +76,7 @@ const PendingWithdrawals = () => {
 										<TableCell
 											key={column.id}
 											align={column.align}
-											style={{ minWidth: column.minWidth }}
+											style={{ minWidth: column.minWidth, fontWeight: 700 }}
 										>
 											{column.label}
 										</TableCell>
@@ -140,7 +115,8 @@ const PendingWithdrawals = () => {
 						count={requests.length}
 						rowsPerPage={rowsPerPage}
 						page={page}
-
+						onPageChange={(evt, page) => setPage(page)}
+						onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 					/>
 				</Paper>
 
@@ -202,7 +178,7 @@ const CompletedWithdrawals = () => {
 									<TableCell
 										key={column.id}
 										align={column.align}
-										style={{ minWidth: column.minWidth }}
+										style={{ minWidth: column.minWidth, fontWeight: 700 }}
 									>
 										{column.label}
 									</TableCell>
@@ -237,7 +213,8 @@ const CompletedWithdrawals = () => {
 					count={requests.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
-
+					onPageChange={(evt, page) => setPage(page)}
+					onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 				/>
 			</Paper>
 		)

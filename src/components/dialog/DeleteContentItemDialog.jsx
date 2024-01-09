@@ -8,17 +8,25 @@ import { enqueueSnackbar } from 'notistack';
 import { ADMIN_KEY, USER_KEY } from '../../lib/constants';
 import { BASE_URL } from '../../states';
 import { useState } from 'react';
+import Loader from '../Loader';
+import { getPublicId } from '../../lib/utils';
 
 
-export default function ConfirmContentDeletion({ handleClose, contentId, isUser = false }) {
+export default function DeleteContentItemDialog({ item, handleClose }) {
 
 	const [deleting, setDeleting] = useState(false)
 
 	const handleConfirm = async () => {
 
 		setDeleting(true);
-		const token = isUser ? sessionStorage.getItem(USER_KEY) : localStorage.getItem(ADMIN_KEY)
-		const res = await fetch(BASE_URL + (isUser ? "/content?contentId=" : "/admin/content?content_id=") + `${contentId}`, {
+
+		const token = sessionStorage.getItem(USER_KEY)
+		const res = await fetch(`${BASE_URL}/contentItem?${new URLSearchParams({
+			itemId: item.id,
+			itemType: item.type,
+			public_id: getPublicId(item.url),
+			previewType: item.previewType
+		})}`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			},
@@ -29,7 +37,8 @@ export default function ConfirmContentDeletion({ handleClose, contentId, isUser 
 		enqueueSnackbar({
 			message: res.message, variant: res.status ? "success" : "error"
 		})
-		handleClose(res.status ? contentId : false)
+		handleClose(res.status ? item : false)
+		setDeleting(false);
 	}
 
 	return (
@@ -37,10 +46,16 @@ export default function ConfirmContentDeletion({ handleClose, contentId, isUser 
 			<Dialog open={true}>
 				<DialogTitle>Delete content</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						This action is unrecoverable. <br />
-						This content will be deleted permanently.
-					</DialogContentText>
+					{
+						deleting ? (
+							<Loader />
+						) : (
+							<DialogContentText>
+								This action is unrecoverable. <br />
+								This content will be deleted permanently.
+							</DialogContentText>
+						)
+					}
 
 				</DialogContent>
 				<DialogActions>

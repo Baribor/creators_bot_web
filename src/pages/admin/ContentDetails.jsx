@@ -1,20 +1,31 @@
 import { Suspense } from "react";
 import { Await, useAsyncValue, useLoaderData } from "react-router-dom";
 import Loader from "../../components/Loader";
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
+import FileContent from "../../components/admin/FileContent";
+
+const getVidUrl = (url) => {
+	const e = url.split('upload');
+	e[1] = '/q_auto:best' + e[1];
+
+	return e.join('upload')
+}
 
 
 const ContentDetail = () => {
 	const { content } = useAsyncValue();
 
 	return (
-		<div className="flex flex-col gap-10">
+		<div className="grid gap-10 p-4">
 			{
 				content.images.length > 0 && <div>
-					<h2 className="text-start text-lg font-bold">Images</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+					<h2 className="text-start text-xl font-[cursive] font-bold">Images</h2>
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(220px,max-content))] row gap-3">
 						{
 							content.images.map((image) => (
-								<img src={image.url} alt="" key={image.id} />
+								<LazyLoadComponent placeholder={<Loader />} key={image.id}>
+									<img src={image.url} alt="" className="max-h-[250px]" />
+								</LazyLoadComponent>
 							))
 						}
 					</div>
@@ -22,34 +33,47 @@ const ContentDetail = () => {
 			}
 
 			{
-				content.video && <div>
-					<h2 className="text-start text-lg font-bold">Video</h2>
-
-					<video src={content.video.url} controls></video>
+				content.video.length > 0 && <div>
+					<h2 className="text-start text-xl font-[cursive] font-bold">Video</h2>
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(220px,400px))] row gap-3">
+						{
+							content.video.map(({ url }, i) => (
+								<LazyLoadComponent placeholder={<Loader />} key={i}>
+									<video src={getVidUrl(url)} controls ></video>
+								</LazyLoadComponent>
+							))
+						}
+					</div>
 				</div>
 			}
+
 			{
-				content.audio && <div>
-					<h2 className="text-start text-lg font-bold">Audio</h2>
-
-					<audio src={content.audio.url} controls></audio>
+				content.audio.length > 0 && <div>
+					<h2 className="text-start text-xl font-[cursive] font-bold">Audio</h2>
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(220px,max-content))] row gap-3">
+						{
+							content.audio.map(({ url }, i) => (
+								<LazyLoadComponent placeholder={<Loader />} key={i}>
+									<audio src={url} controls></audio>
+								</LazyLoadComponent>
+							))
+						}
+					</div>
 				</div>
 			}
-
 			{
 				content.files.length > 0 && <div>
 					<h2 className="text-start text-lg font-bold">Files</h2>
-					<div className="flex flex-col gap-3">
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(160px,max-content))] gap-3">
 						{
 							content.files.map((file, idx) => (
-								<a href={file.url} key={file.id}>
-									{`File ${idx}`}
-								</a>
+								<FileContent key={file.id} file={file} index={idx} />
 							))
 						}
 					</div>
 				</div>
 			}
+
 		</div>
 	)
 }

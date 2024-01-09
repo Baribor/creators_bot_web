@@ -7,57 +7,39 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Suspense, useState } from 'react';
-import { Await, Navigate, useAsyncValue, useLoaderData, useNavigate } from 'react-router-dom';
-import Loader from '../../components/Loader';
-import { ADMIN_KEY } from '../../lib/constants';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import ConfirmContentDeletion from '../../components/dialog/ConfirmContentDelete';
-import ClearIcon from '@mui/icons-material/Clear';
-import CheckIcon from '@mui/icons-material/Check';
+import { useRecoilState } from 'recoil';
+import { verificationRequests } from '../../states';
 
 
 const columns = [
 	{ id: 'id', label: 'ID', minWidth: 100 },
-	{ id: 'creator', label: 'Creator', minWidth: 120 },
+	{ id: 'username', label: 'Username', minWidth: 170 },
 	{
-		id: 'createdAt', label: 'Created At', minWidth: 90,
+		id: 'firstName',
+		label: 'First Name',
+		minWidth: 170,
 		align: 'left',
-		format: (value) => new Date(value).toLocaleDateString('en-US'),
 	},
 	{
-		id: 'views',
-		label: 'Views',
-		minWidth: 60,
-		align: 'center',
-		format: (value) => value.toLocaleString('en-US'),
+		id: 'lastName',
+		label: 'Last Name',
+		minWidth: 170,
+		align: 'left',
+
 	},
-	{
-		id: 'images',
-		label: 'Images',
-		minWidth: 50,
-		align: 'center',
-		format: (value) => value.toLocaleString('en-US'),
-	},
-	{
-		id: 'files',
-		label: 'Files',
-		minWidth: 50,
-		align: 'center',
-		format: (value) => value.toLocaleString('en-US'),
-	},
-	{ id: 'videos', label: 'Videos', minWidth: 50, align: 'center', },
-	{ id: 'audios', label: 'Audios', minWidth: 50, align: 'center', },
-	{ id: 'hasPreview', label: 'Has Preview', minWidth: 50, align: 'center', format: (value) => value ? <CheckIcon color='success' /> : <ClearIcon color='error' /> },
 	{ id: 'action', label: 'Action', minWidth: 40 },
 ];
 
 
-export function ContentsPage() {
+export default function VerificationPage() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const navigate = useNavigate();
-	const _rows = useAsyncValue();
-	const [rows, setRows] = useState(_rows.contents);
+	const [rows, setRows] = useRecoilState(verificationRequests);
 	const [dialog, setDialog] = useState(false);
 
 	const handleContentDeleted = (id) => {
@@ -68,10 +50,6 @@ export function ContentsPage() {
 		setDialog(false)
 	}
 
-	if (_rows?.message === "invalid token") {
-		localStorage.removeItem(ADMIN_KEY)
-		return <Navigate to={"/auth/admin/login"} replace={true} />
-	}
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
 			<TableContainer sx={{ maxHeight: 440 }}>
@@ -102,16 +80,18 @@ export function ContentsPage() {
 													<TableCell key={column.id}>
 														<div className='flex gap-1'>
 															<span className='bg-blue-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => {
-																navigate(`/admin/content/detail/${row.id}`)
+																navigate(`/admin/verification/detail`, {
+																	state: { request: row }
+																})
 															}}>View</span>
-															<span className='bg-red-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => setDialog(row.id)}>Delete</span>
+
 														</div>
 													</TableCell>
 												)
 												:
 												(
 													<TableCell key={column.id} align={column.align}>
-														{column.format
+														{column.format && typeof value === 'number'
 															? column.format(value)
 															: value}
 													</TableCell>
@@ -129,7 +109,7 @@ export function ContentsPage() {
 				count={rows.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
-				onPageChange={(evt, page) => setPage(page)}
+				onPageChange={(evt) => setPage(evt.target.value)}
 				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
 
@@ -138,17 +118,4 @@ export function ContentsPage() {
 			}
 		</Paper>
 	);
-}
-
-
-export default function ContentsStatPage() {
-	const res = useLoaderData();
-
-	return (
-		<Suspense fallback={<Loader />}>
-			<Await resolve={res.data}>
-				<ContentsPage />
-			</Await>
-		</Suspense>
-	)
 }

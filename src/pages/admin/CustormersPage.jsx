@@ -41,11 +41,10 @@ export function CustomersPage() {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const _rows = useAsyncValue();
 	const [rows, setRows] = useState(_rows)
-	console.log(rows)
 
-	const handleCreatorRemoved = (id) => {
-		if (id) {
-			setRows(rows.filter(c => c.id !== id));
+	const handleCreatorRemoved = (customer) => {
+		if (customer) {
+			setRows(rows.filter(c => c.id !== customer.id));
 		}
 
 		setDialog(false);
@@ -65,7 +64,7 @@ export function CustomersPage() {
 								<TableCell
 									key={column.id}
 									align={column.align}
-									style={{ minWidth: column.minWidth }}
+									style={{ minWidth: column.minWidth, fontWeight: 700 }}
 								>
 									{column.label}
 								</TableCell>
@@ -81,14 +80,14 @@ export function CustomersPage() {
 											const value = row[column.id];
 											return column.id === "action" ?
 												(
-													<TableCell>
-														<span className='bg-red-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => setDialog(row.id)}>Delete</span>
+													<TableCell key={column.id}>
+														<span className='bg-red-600 text-white rounded-full px-2 py-1 cursor-pointer' onClick={() => setDialog(row)}>Delete</span>
 
 													</TableCell>
 												)
 												: (
 												<TableCell key={column.id} align={column.align}>
-													{column.format && typeof value === 'number'
+														{column.format
 														? column.format(value)
 														: value}
 												</TableCell>
@@ -106,12 +105,17 @@ export function CustomersPage() {
 				count={rows.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
-				onPageChange={(evt) => setPage(evt.target.value)}
+				onPageChange={(evt, page) => setPage(page)}
 				onRowsPerPageChange={(evt) => setRowsPerPage(evt.target.value)}
 			/>
 
 			{
-				dialog && <ConfirmAccountDeletion creatorId={dialog} handleClose={handleCreatorRemoved} type="customer" />
+				dialog && <ConfirmAccountDeletion account={dialog} handleClose={handleCreatorRemoved} type="customer" title='Delete Customer'>
+					<p>
+						This action is unrecoverable. <br />
+						All generated data belonging to this account will be lost.
+					</p>
+				</ConfirmAccountDeletion>
 			}
 		</Paper>
 	);

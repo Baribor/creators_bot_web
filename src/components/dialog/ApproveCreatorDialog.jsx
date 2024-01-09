@@ -8,56 +8,32 @@ import { enqueueSnackbar } from 'notistack';
 import { ADMIN_KEY } from '../../lib/constants';
 import { BASE_URL } from '../../states';
 import { useState } from 'react';
+import Loader from '../Loader';
 
 
-export default function ConfirmAccountDeletion({ handleClose, account, type, children, title }) {
-	const [loading, setLoading] = useState(false);
+export default function ApproveCreator({ handleClose, creatorId, title, body, path }) {
+
+	const [loading, setLoading] = useState(false)
 
 	const handleConfirm = async () => {
 		setLoading(true);
+		const token = localStorage.getItem(ADMIN_KEY);
 
-		const path = {
-			"customer": `customers?customer_id=${account.id}`,
-			"creator": `creator?creator_id=${account.id}`,
-			"ban": `creator`,
-			"unban": `creator`,
-		}
-
-		const methods = {
-			"customer": "DELETE",
-			"creator": "DELETE",
-			"ban": "PUT",
-			"unban": "POST",
-		}
-		const token = localStorage.getItem(ADMIN_KEY)
-
-		const payload = {
+		const res = await fetch(BASE_URL + `/admin/${path}?creatorId=${creatorId}`, {
 			headers: {
 				Authorization: `Bearer ${token}`
-			},
-			method: methods[type]
-		}
-
-		if (['ban', 'unban'].includes(type)) {
-			payload.body = JSON.stringify({
-				creator_id: account.id
-			})
-			payload.headers['Content-Type'] = 'application/json';
-		}
-
-		const res = await fetch(`${BASE_URL}/admin/${path[type]}`, payload).then(res => res.json()).catch(err => ({ message: "An error occurred" }))
-
+			}
+		}).then(res => res.json()).catch(err => ({ message: "Connection error" }));
 
 		enqueueSnackbar({
 			message: res.message, variant: res.status ? "success" : "error"
-		})
+		});
 
 		if (res.status) {
-			handleClose({ ...account, ...res });
-		} else {
-			handleClose(false)
+			handleClose(true);
 		}
-		setLoading(false)
+		setLoading(false);
+		//handleClose(res.status ? contentId : false)
 	}
 
 	return (
@@ -65,9 +41,11 @@ export default function ConfirmAccountDeletion({ handleClose, account, type, chi
 			<Dialog open={true}>
 				<DialogTitle>{title}</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						{children}
-					</DialogContentText>
+					{
+						loading ? (<Loader />) : (<DialogContentText>
+							{body}
+						</DialogContentText>)
+					}
 
 				</DialogContent>
 				<DialogActions>

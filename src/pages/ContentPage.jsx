@@ -19,9 +19,9 @@ import { USER_KEY } from "../lib/constants";
 
 
 const Content = () => {
-	const { creatorId } = useParams();
 	const [contents, setContents] = useState([]);
 	const [fetching, setFetching] = useState(false);
+
 
 	const handleDeleted = (c) => {
 		setContents((cur) => cur.filter(k => k.id !== c.id))
@@ -33,7 +33,7 @@ const Content = () => {
 
 		const res = await fetch(BASE_URL + "/contents", {
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${token}`,
 			}
 		})
 			.then(res => res.json()).catch(err => console.log(err))
@@ -42,16 +42,18 @@ const Content = () => {
 			setContents(res.contents);
 		} else {
 			enqueueSnackbar({
-				message: "error fetching contents", variant: "error"
-			})
+				message: "error fetching contents", variant: "error",
+			});
 		}
 
-		setFetching(false)
+		setFetching(false);
 	}, [])
 
 	useEffect(() => {
 		fetchContents()
 	}, [])
+
+
 
 	return fetching ?
 		(<LoadingScreen open={true} />)
@@ -61,9 +63,9 @@ const Content = () => {
 				{
 					contents?.length > 0 ?
 						(
-							<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-16 items-center">
+							<div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(280px,280px))] gap-4 items-center md:gap-8">
 								{
-									contents.map((c) => <ContentCard key={c.id} content={c} handleDeleted={handleDeleted} />)
+									contents.map((c) => <ContentCard key={c.id} content={c} handleDeleted={handleDeleted} isUser={true} />)
 								}
 							</div>
 						) : (
@@ -135,17 +137,16 @@ const AuthorizeView = ({ handleAuthorized }) => {
 				open={open}
 			>
 				<Dialog open={true}>
-					<DialogTitle>Canel Request</DialogTitle>
+					<DialogTitle>Authentication</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
-							Enter the OTP send to you on Telegram
+							Enter the OTP sent to you on Telegram
 						</DialogContentText>
 						<TextField
 							autoFocus
 							margin="dense"
 							id="otp"
-							label="OTP"
-							fullWidth
+							label="OTP"							fullWidth
 							variant="standard"
 							onChange={formik.handleChange}
 							value={formik.values.otp}
@@ -163,7 +164,7 @@ const AuthorizeView = ({ handleAuthorized }) => {
 }
 
 export default function MyContentsPage() {
-	const [authorized, setAuthorized] = useState(false);
+	const [authorized, setAuthorized] = useState(sessionStorage.getItem(USER_KEY));
 
 	const handleAuthorized = (isAuthorized) => {
 		setAuthorized(isAuthorized);

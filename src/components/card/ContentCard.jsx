@@ -13,25 +13,28 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import ConfirmContentDeletion from '../dialog/ConfirmContentDelete';
+import { useNavigate } from 'react-router-dom';
+import { formatFilesToDurations } from '../../lib/utils';
 
 
-export default function ContentCard({ content, handleDeleted }) {
+export default function ContentCard({ content, handleDeleted, isUser = false }) {
 
 	const [dialog, setDialog] = useState(false)
+	const navigate = useNavigate();
 
 	const getContentDetails = () => {
 		const contents = [];
 
-		if (content.video) {
+		if (content.video.length > 0) {
 			contents.push(<div key={v4()} className='text-start flex gap-2'>
 				<VideocamIcon />
-				<span>Video ({content.video.duration})</span>
+				<span>Video [{content.video.length}] ({formatFilesToDurations(content.video)})</span>
 			</div>)
 		}
-		if (content.audio) {
+		if (content.audio.length > 0) {
 			contents.push(<div key={v4()} className='text-start flex gap-2'>
 				<AudiotrackIcon />
-				<span>Audio ({content.audio.duration})</span>
+				<span>Audio [{content.audio.length}] ({formatFilesToDurations(content.audio)})</span>
 			</div>)
 		}
 
@@ -39,7 +42,7 @@ export default function ContentCard({ content, handleDeleted }) {
 			contents.push(
 				<div key={v4()} className='text-start flex gap-2'>
 					<PhotoLibraryIcon />
-					<span>Photo ({content.images.length})</span>
+					<span>Photo [{content.images.length}]</span>
 				</div>
 			)
 		}
@@ -48,12 +51,20 @@ export default function ContentCard({ content, handleDeleted }) {
 			contents.push(
 				<div key={v4()} className='text-start flex gap-2'>
 					<AttachFileIcon />
-					<span>Files ({content.files.length})</span>
+					<span>Files [{content.files.length}]</span>
 				</div>
 			)
 		}
 
 		return contents;
+	}
+
+	const handleDetailsClicked = (content) => {
+		navigate("details", {
+			state: {
+				content,
+			}
+		})
 	}
 
 	const handleClose = (status) => {
@@ -80,8 +91,8 @@ export default function ContentCard({ content, handleDeleted }) {
 			<Card sx={{ width: 280, position: "relative", height: "100%" }}>
 			<CardMedia
 				sx={{ height: 180 }}
-				image="/locked-file.jpg"
-				title="green iguana"
+					image={content.preview?.type === "image" ? content.preview.url : "/locked-file.jpg"}
+					title={content.description}
 			/>
 			<CardContent>
 				<div className='flex justify-between font-bold text-blue-600 mb-4'>
@@ -100,22 +111,28 @@ export default function ContentCard({ content, handleDeleted }) {
 					</p>
 				</div>
 			</CardContent>
-			<Tooltip title="Copy link" sx={{ position: "absolute", right: 0, top: 0, margin: "8px" }}>
-				<IconButton onClick={handleCopy}>
-					<ContentCopyIcon />
-				</IconButton>
+				<Tooltip title="Copy link">
+					<div className='text-white bg-black w-fit h-fit rounded-full absolute top-0 right-0 m-2 bg-opacity-[65]'>
+						<IconButton onClick={handleCopy} color='inherit'>
+							<ContentCopyIcon />
+						</IconButton>
+					</div>
 			</Tooltip>
 
 
 		</Card>
-			<div className='flex p-1'>
+			<div className='flex p-1 gap-4'>
+				<span className='bg-blue-600 text-white px-4 rounded-lg cursor-pointer' onClick={() => {
+					handleDetailsClicked(content)
+				}}>View</span>
+
 				<span className='bg-red-400 text-white px-4 rounded-lg cursor-pointer' onClick={() => {
 					setDialog(true)
 				}}>Delete</span>
 			</div>
 
 			{
-				dialog && <ConfirmContentDeletion handleClose={handleClose} contentId={content.id} />
+				dialog && <ConfirmContentDeletion handleClose={handleClose} contentId={content.id} isUser={isUser} />
 			}
 		</div>
 

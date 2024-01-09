@@ -17,13 +17,19 @@ import EuroIcon from '@mui/icons-material/Euro';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { verificationRequests } from "../../states";
+import VerificationNavItem from "../VerificationNavItem";
+import WithdrawalNavItem from "../WithdrawalNavItem";
 
 const drawerWidth = 240;
 
 export default function AdminLayout(props) {
 	const token = useLoaderData();
 	const navigate = useNavigate()
+	const [requests, setRequests] = useRecoilState(verificationRequests);
 	const { window } = props;
 	const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -37,6 +43,8 @@ export default function AdminLayout(props) {
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
 	};
+
+
 
 
 	if (!token) {
@@ -69,9 +77,14 @@ export default function AdminLayout(props) {
 				</NavItem>
 
 
-				<NavItem text="Requests" to="withdrawal_requests" handleClick={handleDrawerToggle}>
+				<VerificationNavItem text="Verification" to="verification" handleClick={handleDrawerToggle}>
+					<VerifiedIcon />
+				</VerificationNavItem>
+
+
+				<WithdrawalNavItem text="Requests" to="withdrawal_requests" handleClick={handleDrawerToggle}>
 					<EuroIcon />
-				</NavItem>
+				</WithdrawalNavItem>
 
 				<span className="text-red-400 text-start ml-1 p-3 hover:bg-red-200 w-fit rounded-full px-4 cursor-pointer" onClick={handleLogout}>LOGOUT</span>
 
@@ -82,7 +95,7 @@ export default function AdminLayout(props) {
 	const container = window !== undefined ? () => window().document.body : undefined;
 
 	return (
-		<Box sx={{ display: 'flex' }}>
+		<Box sx={{ display: 'grid', gridTemplateColumns: { sm: `${drawerWidth}px 1fr` } }}>
 			<CssBaseline />
 			<AppBar
 				position="fixed"
@@ -144,7 +157,7 @@ export default function AdminLayout(props) {
 			</Box>
 			<Box
 				component="main"
-				sx={{ p: 3, width: { sm: `calc(100% - ${drawerWidth}px)`, height: "100vh", overflowY: "scroll" } }}
+				sx={{ p: 3, overflowY: "scroll", height: "100vh", width: { sm: `calc(100vw - ${drawerWidth}px)` } }}
 			>
 				<Toolbar />
 				<Outlet />

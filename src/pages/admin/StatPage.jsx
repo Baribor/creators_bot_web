@@ -13,7 +13,7 @@ const StatDetails = () => {
 		return <Navigate to={"/auth/admin/login"} replace={true} />
 	}
 	return (
-		<div className="h-full w-full">
+		<div>
 			{
 				data.status ? (
 					Object.entries(data.data).map((data) => <StateContainer key={data[0]} title={data[0]} stats={data[1]} />)
