@@ -20,6 +20,8 @@ import Checkout from './pages/CheckoutPage'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import CheckoutLayout from './components/CheckoutLayout'
+import OrderLogPage from './pages/admin/OrderLog'
+import BroadcastPage from './pages/admin/BroadcastPage'
 
 
 
@@ -74,6 +76,32 @@ const routes = [
               return defer({ data })
             },
 
+          },
+          {
+            path: "order_logs",
+            element: <OrderLogPage />,
+            loader: async () => {
+              const data = fetch(BASE_URL + "/admin/order_logs", {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(ADMIN_KEY)}`
+                }
+              }).then(res => res.json()).catch(err => null)
+              return defer({ data })
+            },
+
+          },
+
+          {
+            path: "broadcast",
+            element: <BroadcastPage />,
+            loader: async () => {
+              const data = fetch(BASE_URL + "/admin/broadcast", {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(ADMIN_KEY)}`
+                }
+              }).then(res => res.json()).catch(err => null)
+              return defer({ data })
+            },
           },
 
           {

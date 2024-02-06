@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { useState } from "react";
 import ApproveCreator from "../../components/dialog/ApproveCreatorDialog";
+import CancelApprovalDialog from "../../components/dialog/CancelApprovalDialog";
 
 
 export default function VerificationDetail() {
@@ -90,7 +91,7 @@ export default function VerificationDetail() {
 				dialog && dialog.type === "approve" && <ApproveCreator handleClose={handleApproved} creatorId={dialog.creatorId} title="Approve Creator" body="Do you want to approve this creator?" path="approve" />
 			}
 			{
-				dialog && dialog.type === "reject" && <ApproveCreator handleClose={handleApproved} creatorId={dialog.creatorId} title="Reject Verification Request" body="Do you want to reject this verification request?" path="reject" />
+				dialog && dialog.type === "reject" && <CancelApprovalDialog creatorId={dialog.creatorId} handleClose={handleApproved} />
 			}
 		</Box>
 	)

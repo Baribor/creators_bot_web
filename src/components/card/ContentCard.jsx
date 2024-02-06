@@ -97,7 +97,11 @@ export default function ContentCard({ content, handleDeleted, isUser = false }) 
 			<CardContent>
 				<div className='flex justify-between font-bold text-blue-600 mb-4'>
 					<span>Content: #{content.id}</span>
-					<span>€ {content.price}</span>
+						{
+							content.plan_id ? (
+								<span>Plan based</span>
+							) : (<span>€ {content.price}</span>)
+						}
 				</div>
 				<Typography gutterBottom variant="h6" component="div" sx={{ textAlign: "start", fontSize: "1rem", fontWeight: "bold" }} >
 					Contents:

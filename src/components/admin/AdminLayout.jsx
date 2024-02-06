@@ -15,12 +15,12 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import EuroIcon from '@mui/icons-material/Euro';
 import MenuIcon from '@mui/icons-material/Menu';
+import PodcastsIcon from '@mui/icons-material/Podcasts';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import CartIcon from '@mui/icons-material/ShoppingCart'
 import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { verificationRequests } from "../../states";
 import VerificationNavItem from "../VerificationNavItem";
 import WithdrawalNavItem from "../WithdrawalNavItem";
 
@@ -29,7 +29,6 @@ const drawerWidth = 240;
 export default function AdminLayout(props) {
 	const token = useLoaderData();
 	const navigate = useNavigate()
-	const [requests, setRequests] = useRecoilState(verificationRequests);
 	const { window } = props;
 	const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -85,6 +84,14 @@ export default function AdminLayout(props) {
 				<WithdrawalNavItem text="Requests" to="withdrawal_requests" handleClick={handleDrawerToggle}>
 					<EuroIcon />
 				</WithdrawalNavItem>
+
+				<NavItem text="Broadcast" to="broadcast" handleClick={handleDrawerToggle}>
+					<PodcastsIcon />
+				</NavItem>
+
+				<NavItem text="Order Logs" to="order_logs" handleClick={handleDrawerToggle}>
+					<CartIcon />
+				</NavItem>
 
 				<span className="text-red-400 text-start ml-1 p-3 hover:bg-red-200 w-fit rounded-full px-4 cursor-pointer" onClick={handleLogout}>LOGOUT</span>
 

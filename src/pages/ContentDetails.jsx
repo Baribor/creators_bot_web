@@ -6,6 +6,7 @@ import { LazyLoadComponent } from 'react-lazy-load-image-component';
 import Loader from "../components/Loader";
 import { useState } from "react";
 import DeleteContentItemDialog from "../components/dialog/DeleteContentItemDialog";
+import FileContent from "../components/admin/FileContent";
 
 const ContentDetails = () => {
 	const navigate = useNavigate();
@@ -94,12 +95,10 @@ const ContentDetails = () => {
 			{
 				contents.files.length > 0 && <div>
 					<h2 className="text-start text-lg font-bold">Files</h2>
-					<div className="flex flex-col gap-3">
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(160px,max-content))] gap-3">
 						{
 							contents.files.map((file, idx) => (
-								<a href={file.url} key={file.id} download>
-									{`File ${idx}`}
-								</a>
+								<FileContent key={file.id} file={file} index={idx} />
 							))
 						}
 					</div>
